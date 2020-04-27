@@ -1,0 +1,311 @@
+﻿<br />
+<br />
+
+<br />
+<div class="container " ng-controller="patient-controller">
+    <style>
+        article, aside, figure, footer, header, hgroup,
+        menu, nav, section {
+            display: block;
+        }
+
+        .container {
+            max-width: 100%;
+        }
+    </style>
+
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            Patient Details - DTCS Task.
+        </div>
+        <br />
+        <div style="margin-left:17px">
+            <button class="btn btn-info" data-toggle="modal" ng-click="GetDropDownData()" data-target="#AddNew">Add New Patient</button>
+        </div>
+
+        <br />
+        <div class="container">
+            <input type="text" class="form-control" placeholder="Search Patient" ng-model="search" />
+        </div>
+        <br />
+        <table class="table table-bordered">
+            <thead style="background-color:lightblue;">
+                <tr>
+                    @*<th> Patient ID</th>*@
+                    <th ng-click="orderByMe('FirstName')"> First Name</th>
+                    <th ng-click="orderByMe('LastName')"> Last Name</th>
+                    <th ng-click="orderByMe('Gender')">Gender</th>
+                    <th ng-click="orderByMe('DateOfBirth')">DOB</th>
+                    <th ng-click="orderByMe('State')">State</th>
+                    <th ng-click="orderByMe('City')">City</th>
+                    <th> Actions</th>
+                </tr>
+            </thead>
+            <tbody ng-repeat="emp in Patients | filter:search | orderBy:myOrderBy">
+                <tr>
+                    <td style="display:none">{{emp.PatientId}}</td>
+                    <td>{{emp.FirstName}}</td>
+                    <td>{{emp.LastName}}</td>
+                    <td>{{emp.Gender}}</td>
+                    <td>{{emp.DateOfBirth}}</td>
+                    <td style="display:none;">{{emp.StateId}}</td>
+                    <td>{{emp.State}}</td>
+                    <td style="display:none;">{{emp.CityId}}</td>
+                    <td>{{emp.City}}</td>
+                    <td style="width:200px;">
+                        <a href="#" class="btn btn-info" data-toggle="modal"
+                           data-target="#Update" ng-model="selected" ng-click="getForUpdate(emp)">Update</a>
+                        <a href="#" class="btn btn-danger" id="btnDelete" data-toggle="modal"
+                           data-target="#deleteDialog" ng-click="getForDelete(emp)">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+    </div>
+    @*New record Modal addition..*@
+    <div class="modal" id="AddNew" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h3 class="text-info">Add New Patient</h3>
+                </div>
+
+                <div class="modal-body" style="margin-left:-4px">
+                    @*Add New Employee form starts here...*@
+                    <form class="form-horizontal" name="AddNewForm" novalidate>
+
+                        <div class="form-group">
+                            <input class="form-control" readonly="readonly"
+                                   name="PatientNo" ng-model="PatientNo" type="hidden"
+                                   placeholder="Patient Number" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="col-lg-6">
+                                    <label class="control-label"> First Name</label>
+                                    <input class="form-control" name="FirstName"
+                                           ng-model="FirstName" type="text"
+                                           placeholder="Patient FirstName"  id="EmpName" required capitalize />
+                                    <span id="FirstNameMsg" style="color:red;display:none">Please Enter FirstName</span>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="control-label"> Last Name</label>
+                                    <input class="form-control" name="LastName"
+                                           ng-model="LastName" type="text"
+                                           placeholder="Patient LastName" id="LastName" required capitalize />
+                                    <span id="LastNameMsg" style="color:red;display:none">Please Enter LastName</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="col-lg-6">
+                                    <label class="control-label">Gender</label><br />
+                                    <div class="col-lg-6">
+                                        <input type="radio" ng-model="gender" name="name" value="male" />Male
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <input type="radio" ng-model="gender" name="name" value="female" />Female<br />
+                                    </div>
+                                    <span id="GenderMsg" style="color:red;display:none">Please Enter Gender</span>
+
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="control-label">Date Of Birth</label>
+                                    <input class="datepickerFuture" style="width:100%" ng-model="DateOfBirth" name="StartDate" />
+                                    <span id="DOBMsg" style="color:red;display:none">Please Enter DateOfBirth</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="col-lg-6">
+                                    <label class="control-label">State</label>
+                                    <select class="form-control" ng-change="GetStateValueForCity()" ng-model="StateDropDown">
+                                        <option selected value="">--Select State--</option>
+                                        <option data-ng-repeat="st in States" value="{{st.StateId}}">{{st.StateName}}</option>
+                                    </select>
+                                    <span id="StateMsg" style="color:red;display:none">Please Enter State</span>
+
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="control-label">City</label>
+                                    <select class="form-control" ng-model="CityDropDown">
+                                        <option selected value="">--Select City--</option>
+                                        <option data-ng-repeat="cit in Cities" value="{{cit.CityId}}">{{cit.CityName}}</option>
+                                    </select>
+                                    <span id="CityMsg" style="color:red;display:none">Please Enter City</span>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button ng-disabled="AddNewForm.$invalid" type="button" class="btn btn-primary"
+                            id="btnSave" ng-click="save()">
+                        Save
+                    </button>
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal" ng-click="resetSave()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Upadate Employee records*@
+    <div class="modal" id="Update" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h3 class="text-info">Update Existing Patient</h3>
+                </div>
+                <div class="modal-body" style="margin-left:20px">
+                    <form class="form-horizontal" name="UpdateEmployeeForm">
+                        <div class="form-group">
+                            <input class="form-control" readonly="readonly"
+                                   name="PatientNo" ng-model="UpdatePatientNo" type="hidden"
+                                   placeholder="Patient Number" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="col-lg-6">
+                                    <label class="control-label"> First Name</label>
+                                    <input class="form-control" name="FirstName"
+                                           ng-model="UpdateFirstName" type="text"
+                                           placeholder="Patient FirstName" id="EmpName" required capitalize />
+                                    <span class="msg" style="color:red;" ng-show="AddNewForm.FirstName.$dirty && AddNewForm.FirstName.$invalid">FirstName in required</span>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="control-label"> Last Name</label>
+                                    <input class="form-control" name="LastName"
+                                           ng-model="UpdateLastName" type="text"
+                                           placeholder="Patient LastName" id="LastName" required capitalize />
+                                    <span class="msg" style="color:red;" ng-show="AddNewForm.LastName.$dirty && AddNewForm.LastName.$invalid">LastName in required</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="col-lg-6">
+                                    <label class="control-label">Gender</label><br />
+                                    <div class="col-lg-6">
+                                        <input type="radio" ng-model="updategender" name="name" value="male" />Male
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <input type="radio" ng-model="updategender" name="name" value="female" />Female<br />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="control-label">Date Of Birth</label>
+                                    <input class="datepickerFuture" style="width:100%" ng-model="UpdateDateOfBirth" name="StartDate" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="col-lg-6">
+                                    <label class="control-label">State</label>
+                                    <select class="form-control"  ng-model="StateDropDown" >
+                                        <option selected value="">--Select State--</option>
+                                        <option data-ng-repeat="st in States"  value="{{st.StateId}}">{{st.StateName}}</option>
+                                    </select>
+
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="control-label">City</label>
+                                    <select class="form-control" ng-model="CityDropDown">
+                                        <option selected value="">--Select State--</option>
+                                        <option selected data-ng-repeat="cit in Cities" value="{{cit.CityId}}">{{cit.CityName}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary"  id="btnUpdate"
+                            data-dismiss="modal" ng-click="update()">
+                        Update
+                    </button>
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Delete Employee record*@
+    <div class="modal" role="dialog" id="deleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h3 class="text-info">Are you sure you want to delete the record?</h3>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        Patient Name : {{UpdateFullName}}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger"
+                            data-dismiss="modal"
+                            ng-click="delete(UpdatePatientNo)">
+                        Delete Record
+                    </button>
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".datepickerFuture").datepicker({
+                duration: "fast",
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true,
+                yearRange: '-100:+0',
+                dateFormat: 'dd/mm/yy',
+                maxDate: '0'
+            });
+
+
+        });
+    </script>
+
+    <script src="~/Scripts/app/app.js"></script>
+    <script src="~/Scripts/app/Services/PatientServices.js"></script>
+    <script src="~/Scripts/app/Controller/PatientController.js"></script>
+    <script src="~/Scripts/app/angular1.min.js"></script>
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/app/jquery-1.8.3.min.js"></script>
+    <script src="~/Scripts/app/jquery-ui.js"></script>
+    <script src="~/Scripts/app/traceur.js"></script>
+    <script src="~/Scripts/app/processing-api.min.js"></script>
+    <script src="~/Scripts/app/react-with-addons.js"></script>
+    <link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/app/jquery-1.11.0.min.js"></script>
+    <script src="~/Scripts/app/jquery-ui.min.js"></script>
+
+
+}
+
